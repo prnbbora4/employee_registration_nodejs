@@ -5,6 +5,8 @@ const app = express();
 const path = require("path");
 const hbs = require("hbs");
 const bcrypt = require("bcryptjs");
+const cookieParser = require("cookie-parser");
+const auth = require("./middleware/auth");
 
 
 const port = process.env.PORT || 3000;
@@ -33,11 +35,50 @@ hbs.registerPartials(partials_path);
 // access json data from postman
 app.use(express.json());
 
+// cookie - parser
+app.use(cookieParser());
 // access input data from a form
 app.use(express.urlencoded({extended: false}));
 
 app.get('/', (req, res) => {
     res.render("index");
+})
+
+app.get('/secret', auth, (req, res) => {
+    // console.log(`secret page ${req.cookies.jwt}`);
+    res.render("secret");
+})
+
+app.get('/logout', auth, async (req, res) => {
+    try {
+        // for single device logout
+        req.user.tokens = req.user.tokens.filter((currElement) => {
+            return currElement.token !== req.token
+        });
+
+        res.clearCookie("jwt");
+        console.log("logout success");
+
+        await req.user.save();
+        res.render("login");
+    } catch (error) {
+        res.status(500).send(error);
+    }
+})
+
+app.get('/logout_all', auth, async (req, res) => {
+    try {
+        // logout from all devices
+        req.user.tokens = [];
+
+        res.clearCookie("jwt");
+        console.log("logout success");
+
+        await req.user.save();
+        res.render("login");
+    } catch (error) {
+        res.status(500).send(error);
+    }
 })
 
 app.get('/register', (req, res) => {
@@ -64,8 +105,13 @@ app.post('/register', async (req, res) => {
             const token = await  registerEmployee.generateAuthToken();
             console.log(token);
 
+            res.cookie("jwt", token, {
+                expires: new Date(Date.now() + 30000),
+                httpOnly: true
+            });
+
             const registered= await registerEmployee.save();
-            res.status(201).render("index");
+            res.status(201).render("login");
 
         }else{
             res.send("password no match")
@@ -94,9 +140,15 @@ app.post('/login', async (req, res) => {
         const token = await  useremail.generateAuthToken();
         console.log(token);
 
+        res.cookie("jwt", token, {
+            expires: new Date(Date.now() + 60000),
+            httpOnly: true,
+            // secure: true
+        });
+
         // console.log(useremail.password);
         if(isMatch){
-            res.status(200).render("register");
+            res.status(200).render("secret");
         }else{
             res.status(400).send("Invalid details");
         }
