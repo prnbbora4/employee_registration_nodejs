@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 //     .then( () => console.log("Connected sucessfully..."))
 //     .catch( () => console.log(err));
 
-mongoose.connect('mongodb+srv://prnbbora4:qwertyuiop@1@cluster0.kvsxn.mongodb.net/emp_registration?retryWrites=true&w=majority', {
+mongoose.connect("mongodb+srv://prnbbora4:qwertyuiop@1@cluster0.kvsxn.mongodb.net/emp_registration?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify:false, 
