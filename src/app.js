@@ -157,6 +157,28 @@ app.post('/login', async (req, res) => {
     }
 })
 
+
+// create api
+app.get('/api/data', async(req, res) => {
+    try {
+        const apiData= await Employee.find()
+        res.status(201).send(apiData);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+})
+
+// app.get('/api/data/:gender', async(req, res) => {
+//     try {
+//         apiData = Employee.filter((e)=>{
+//             return e.gender == req.params.gender
+//         })  
+//         res.status(201).send( e.gender);
+//     } catch (error) {
+//         res.status(400).send(error);
+//     }
+// })
+
 // Running the app
 app.listen(port, () => {
     console.log(`App is listening at http://localhost:${port}`);
