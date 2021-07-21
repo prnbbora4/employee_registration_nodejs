@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const { handlebars } = require("hbs");
 const app = express();
@@ -57,6 +58,11 @@ app.post('/register', async (req, res) => {
                 password : password,
                 confirm_password : confirm_password
             })
+            
+            // tokens generation as a middleware
+            console.log(registerEmployee);
+            const token = await  registerEmployee.generateAuthToken();
+            console.log(token);
 
             const registered= await registerEmployee.save();
             res.status(201).render("index");
@@ -84,9 +90,13 @@ app.post('/login', async (req, res) => {
         // bcrypt compare password for login
         const isMatch = await bcrypt.compare(password, useremail.password);
 
+        // tokens generation as a middleware
+        const token = await  useremail.generateAuthToken();
+        console.log(token);
+
         // console.log(useremail.password);
         if(isMatch){
-            res.status(200).render("index");
+            res.status(200).render("register");
         }else{
             res.status(400).send("Invalid details");
         }
