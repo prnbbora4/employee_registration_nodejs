@@ -106,7 +106,7 @@ app.post('/register', async (req, res) => {
             console.log(token);
 
             res.cookie("jwt", token, {
-                expires: new Date(Date.now() + 30000),
+                expires: new Date(Date.now() + 60000),
                 httpOnly: true
             });
 
@@ -141,7 +141,7 @@ app.post('/login', async (req, res) => {
         console.log(token);
 
         res.cookie("jwt", token, {
-            expires: new Date(Date.now() + 60000),
+            expires: new Date(Date.now() + 900000),
             httpOnly: true,
             // secure: true
         });
