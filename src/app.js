@@ -44,9 +44,14 @@ app.get('/', (req, res) => {
     res.render("index");
 })
 
-app.get('/secret', auth, (req, res) => {
+app.get('/secret', auth, async (req, res) => {
     // console.log(`secret page ${req.cookies.jwt}`);
-    res.render("secret");
+    // res.render("secret", req.user);
+    try {
+        res.render("secret", req.user)
+    } catch (error) {
+        console.log(error);
+    }
 })
 
 app.get('/logout', auth, async (req, res) => {
@@ -178,6 +183,14 @@ app.get('/api/data', async(req, res) => {
 //         res.status(400).send(error);
 //     }
 // })
+
+app.get('/profile', auth, async (req, res) => {
+    try {
+        res.render("profile", req.user)
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 // Running the app
 app.listen(port, () => {
